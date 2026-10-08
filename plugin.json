@@ -1,0 +1,14 @@
+{
+  "id": "myLocalDesktopClockWidget",
+  "name": "Aurora Clock",
+  "description": "My local desktop widget it is beautiful.",
+  "version": "1.0.0",
+  "author": "Hedayatullah",
+  "type": "desktop",
+  "license": "MIT",
+  "component": "./MyWidget.qml",
+  "icon": "widgets",
+  "settings": "./MySettings.qml",
+  "requires_dms": ">=1.6.0",
+  "permissions": ["settings_read", "settings_write"]
+}
