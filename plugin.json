@@ -1,14 +1,15 @@
 {
-  "id": "myLocalDesktopClockWidget",
+  "id": "auroraClock",
   "name": "Aurora Clock",
-  "description": "My local desktop widget it is beautiful.",
+  "description": "A clean desktop clock widget with seconds, date, and optional 24-hour format.",
   "version": "1.0.0",
   "author": "Hedayatullah",
   "type": "desktop",
   "license": "MIT",
-  "component": "./MyWidget.qml",
+  "component": "./AuroraClockWidget.qml",
   "icon": "widgets",
-  "settings": "./MySettings.qml",
+  "settings": "./AuroraClockSettings.qml",
   "requires_dms": ">=1.6.0",
+  "capabilities": ["desktop-widget"],
   "permissions": ["settings_read", "settings_write"]
 }

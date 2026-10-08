@@ -4,7 +4,7 @@ import qs.Modules.Plugins
 
 PluginSettings {
     id: root
-    pluginId: "myLocalDesktopClockWidget"
+    pluginId: "auroraClock"
 
     SliderSetting {
         settingKey: "backgroundOpacity"
