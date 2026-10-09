@@ -29,7 +29,6 @@ DesktopPluginComponent {
     readonly property string monthText: now.toLocaleDateString(I18n.locale(), "MMMM")
 
     readonly property real contentMargin: Theme.spacingL
-    readonly property real labelFontSize: Theme.fontSizeSmall
     readonly property real detailFontSize: Theme.fontSizeSmall
 
     SystemClock {
@@ -53,20 +52,6 @@ DesktopPluginComponent {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 0
-
-            StyledText {
-                Layout.fillWidth: true
-                Layout.preferredHeight: Theme.fontSizeLarge
-                text: "LOCAL TIME"
-                font.family: root.resolvedFontFamily
-                font.pixelSize: root.labelFontSize
-                font.weight: Font.DemiBold
-                font.letterSpacing: 2
-                color: Theme.surfaceVariantText
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
-                wrapMode: Text.NoWrap
-            }
 
             StyledText {
                 Layout.fillWidth: true
