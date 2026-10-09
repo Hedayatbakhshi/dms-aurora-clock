@@ -2,7 +2,7 @@
   "id": "auroraClock",
   "name": "Aurora Clock",
   "description": "A clean desktop clock widget with seconds, date, and optional 24-hour format.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Hedayatullah",
   "type": "desktop",
   "license": "MIT",
