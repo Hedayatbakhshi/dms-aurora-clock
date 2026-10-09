@@ -21,7 +21,7 @@ DesktopPluginComponent {
 
     readonly property bool use24Hour: force24Hour || (typeof SettingsData !== "undefined" && SettingsData.use24HourClock === true)
     readonly property string resolvedFontFamily: fontFamilySetting !== "" ? fontFamilySetting : Theme.fontFamily
-    readonly property string timePattern: use24Hour ? (showSeconds ? "HH:mm:ss" : "HH:mm") : (showSeconds ? "h:mm:ss AP" : "h:mm AP")
+    readonly property string timePattern: use24Hour ? "HH:mm" : "h:mm AP"
 
     readonly property var now: systemClock.date ?? new Date()
     readonly property string timeText: now.toLocaleTimeString(I18n.locale(), timePattern)
