@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.Common
+import qs.Widgets
 import qs.Modules.Plugins
 
 DesktopPluginComponent {
@@ -11,48 +13,29 @@ DesktopPluginComponent {
     widgetWidth: 520
     widgetHeight: 220
 
-    property string timeZoneLabel: "LOCAL TIME"
-    property string hourMinute: "00:00"
-    property string seconds: "00"
-    property string amPm: ""
-    property string dayName: ""
-    property string monthName: ""
-
     readonly property real bgOpacity: (pluginData?.backgroundOpacity ?? 0) / 100
     readonly property bool showSeconds: pluginData?.showSeconds ?? true
     readonly property bool showDate: pluginData?.showDate ?? true
+    readonly property bool force24Hour: pluginData?.force24Hour === true
     readonly property string fontFamilySetting: pluginData?.fontFamily ?? ""
 
-    function refresh() {
-        const now = new Date();
+    readonly property bool use24Hour: force24Hour || (typeof SettingsData !== "undefined" && SettingsData.use24HourClock === true)
+    readonly property string resolvedFontFamily: fontFamilySetting !== "" ? fontFamilySetting : Theme.fontFamily
+    readonly property string timePattern: use24Hour ? (showSeconds ? "HH:mm:ss" : "HH:mm") : (showSeconds ? "h:mm:ss AP" : "h:mm AP")
 
-        const force24 = pluginData?.force24Hour === true;
-        const use24 = force24 ? true : (typeof SettingsData !== "undefined" ? SettingsData.use24HourClock : true);
-        let h = now.getHours();
-        amPm = "";
-        if (!use24) {
-            amPm = h >= 12 ? "PM" : "AM";
-            h = h % 12;
-            if (h === 0)
-                h = 12;
-        }
-        const m = now.getMinutes();
-        hourMinute = h + ":" + (m < 10 ? "0" : "") + m;
-        const s = now.getSeconds();
-        seconds = (s < 10 ? "0" : "") + s;
-        dayName = Qt.formatDateTime(now, "dddd");
-        monthName = Qt.formatDateTime(now, "MMMM");
+    readonly property var now: systemClock.date ?? new Date()
+    readonly property string timeText: now.toLocaleTimeString(I18n.locale(), timePattern)
+    readonly property string dayText: now.toLocaleDateString(I18n.locale(), "dddd")
+    readonly property string monthText: now.toLocaleDateString(I18n.locale(), "MMMM")
+
+    readonly property real contentMargin: Theme.spacingL
+    readonly property real labelFontSize: Theme.fontSizeSmall
+    readonly property real detailFontSize: Theme.fontSizeSmall
+
+    SystemClock {
+        id: systemClock
+        precision: root.showSeconds ? SystemClock.Seconds : SystemClock.Minutes
     }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: root.refresh()
-    }
-
-    Component.onCompleted: refresh()
 
     Rectangle {
         anchors.fill: parent
@@ -62,84 +45,90 @@ DesktopPluginComponent {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: Math.max(18, width * 0.035)
-        anchors.rightMargin: Math.max(18, width * 0.035)
-        spacing: Math.max(16, width * 0.035)
+        anchors.leftMargin: root.contentMargin
+        anchors.rightMargin: root.contentMargin
+        spacing: Theme.spacingL
 
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 0
 
-            Text {
+            StyledText {
                 Layout.fillWidth: true
-                Layout.preferredHeight: Math.max(16, root.height * 0.16)
-                text: root.timeZoneLabel + (root.amPm !== "" ? "  ·  " + root.amPm : "")
-                font.family: root.fontFamilySetting !== "" ? root.fontFamilySetting : Theme.fontFamily
-                font.pixelSize: Math.max(10, root.height * 0.075)
+                Layout.preferredHeight: Theme.fontSizeLarge
+                text: "LOCAL TIME"
+                font.family: root.resolvedFontFamily
+                font.pixelSize: root.labelFontSize
                 font.weight: Font.DemiBold
-                font.letterSpacing: 3
-                color: Theme.surfaceText
-                opacity: 0.88
+                font.letterSpacing: 2
+                color: Theme.surfaceVariantText
                 horizontalAlignment: Text.AlignHCenter
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
 
-            Text {
+            StyledText {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: root.hourMinute
-                font.family: root.fontFamilySetting !== "" ? root.fontFamilySetting : Theme.fontFamily
+                text: root.timeText
+                font.family: root.resolvedFontFamily
                 font.pixelSize: root.height * 0.72
                 fontSizeMode: Text.Fit
-                minimumPixelSize: 36
-                font.weight: Font.Black
+                minimumPixelSize: Theme.fontSizeLarge * 2
+                font.weight: Font.Bold
                 color: Theme.primary
                 horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
         }
 
         ColumnLayout {
-            Layout.preferredWidth: Math.max(76, root.width * 0.17)
+            Layout.preferredWidth: Math.max(root.detailFontSize * 8, root.width * 0.17)
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignVCenter
-            spacing: 0
+            spacing: Theme.spacingXXS
             visible: root.showSeconds || root.showDate
 
-            Text {
+            StyledText {
                 Layout.fillWidth: true
-                text: root.seconds
-                visible: root.showSeconds
-                font.family: root.fontFamilySetting !== "" ? root.fontFamilySetting : Theme.fontFamily
-                font.pixelSize: root.height * 0.34
+                text: root.showSeconds ? root.now.toLocaleTimeString(I18n.locale(), "ss") : ""
+                font.family: root.resolvedFontFamily
+                font.pixelSize: root.height * 0.3
                 fontSizeMode: Text.Fit
-                minimumPixelSize: 22
-                font.weight: Font.Black
+                minimumPixelSize: Theme.fontSizeLarge
+                font.weight: Font.Bold
                 color: Theme.surfaceText
                 horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignBottom
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
 
-            Text {
+            StyledText {
                 Layout.fillWidth: true
-                text: root.dayName
+                text: root.dayText
                 visible: root.showDate
-                font.family: root.fontFamilySetting !== "" ? root.fontFamilySetting : Theme.fontFamily
-                font.pixelSize: Math.max(11, root.height * 0.085)
+                font.family: root.resolvedFontFamily
+                font.pixelSize: root.detailFontSize
                 font.weight: Font.DemiBold
-                color: Theme.surfaceText
+                color: Theme.surfaceVariantText
                 horizontalAlignment: Text.AlignLeft
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
 
-            Text {
+            StyledText {
                 Layout.fillWidth: true
-                text: root.monthName
+                text: root.monthText
                 visible: root.showDate
-                font.family: root.fontFamilySetting !== "" ? root.fontFamilySetting : Theme.fontFamily
-                font.pixelSize: Math.max(11, root.height * 0.085)
+                font.family: root.resolvedFontFamily
+                font.pixelSize: root.detailFontSize
                 font.weight: Font.DemiBold
-                color: Theme.surfaceText
+                color: Theme.surfaceVariantText
                 horizontalAlignment: Text.AlignLeft
+                elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
         }
     }
