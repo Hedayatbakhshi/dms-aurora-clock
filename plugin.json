@@ -7,7 +7,7 @@
   "type": "desktop",
   "license": "MIT",
   "component": "./AuroraClockWidget.qml",
-  "icon": "widgets",
+  "icon": "schedule",
   "settings": "./AuroraClockSettings.qml",
   "requires_dms": ">=1.6.0",
   "capabilities": ["desktop-widget"],
